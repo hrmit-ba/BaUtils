@@ -45,27 +45,27 @@ class Troops extends React.Component {
     }
 
     this.warriors = [
-      { name: "Warrior"     , wood: 100,  meat: 50,   mana: 0,    stone: 0,    ivory: 0 },
-      { name: "Protector"   , wood: 125,  meat: 75,   mana: 5,    stone: 100,  ivory: 0 },
-      { name: "Warmaster"   , wood: 0,    meat: 150,  mana: 10,   stone: 150,  ivory: 120 },
-      { name: "Berserker"   , wood: 0,    meat: 400,  mana: 70,   stone: 400,  ivory: 300 },
-      { name: "Marauder"    , wood: 0,    meat: 1000, mana: 500,  stone: 1000, ivory: 800 }
+      { class: "warrior-t1" , name: "Warrior"     , wood: 100,  meat: 50,   mana: 0,    stone: 0,    ivory: 0   },
+      { class: "warrior-t2" , name: "Protector"   , wood: 125,  meat: 75,   mana: 5,    stone: 100,  ivory: 0   },
+      { class: "warrior-t3" , name: "Warmaster"   , wood: 0,    meat: 150,  mana: 10,   stone: 150,  ivory: 120 },
+      { class: "warrior-t4" , name: "Berserker"   , wood: 0,    meat: 400,  mana: 70,   stone: 400,  ivory: 300 },
+      { class: "warrior-t5" , name: "Marauder"    , wood: 0,    meat: 1000, mana: 500,  stone: 1000, ivory: 800 }
     ]
 
     this.riders = [
-      { name: "Wolfrider"   , wood: 50,   meat: 100,  mana: 0,    stone: 0,    ivory: 0 },
-      { name: "Rhinorider"  , wood: 100,  meat: 200,  mana: 5,    stone: 0,    ivory: 0 },
-      { name: "Rhinomaster" , wood: 150,  meat: 150,  mana: 10,   stone: 0,    ivory: 120 },
-      { name: "Dragonrider" , wood: 400,  meat: 400,  mana: 70,   stone: 0,    ivory: 300 },
-      { name: "Dragonmaster", wood: 1000, meat: 1000, mana: 500,  stone: 0,    ivory: 800 }
+      { class: "rider-t1"   , name: "Wolfrider"   , wood: 50,   meat: 100,  mana: 0,    stone: 0,    ivory: 0   },
+      { class: "rider-t2"   , name: "Rhinorider"  , wood: 100,  meat: 200,  mana: 5,    stone: 0,    ivory: 0   },
+      { class: "rider-t3"   , name: "Rhinomaster" , wood: 150,  meat: 150,  mana: 10,   stone: 0,    ivory: 120 },
+      { class: "rider-t4"   , name: "Dragonrider" , wood: 400,  meat: 400,  mana: 70,   stone: 0,    ivory: 300 },
+      { class: "rider-t5"   , name: "Dragonmaster", wood: 1000, meat: 1000, mana: 500,  stone: 0,    ivory: 800 }
     ]
 
     this.oracles = [
-      { name: "Apprentice"  , wood: 75,   meat: 75,   mana: 0,    stone: 0,    ivory: 0 },
-      { name: "Spellcrafter", wood: 100,  meat: 100,  mana: 5,    stone: 100,  ivory: 0 },
-      { name: "Totemist"    , wood: 150,  meat: 150,  mana: 10,   stone: 150,  ivory: 0 },
-      { name: "Oracle"      , wood: 400,  meat: 400,  mana: 70,   stone: 400,  ivory: 0 },
-      { name: "Valkyrie"    , wood: 1000, meat: 1000, mana: 500,  stone: 1000, ivory: 0 }
+      { class: "shaman-t1"   , name: "Apprentice"  , wood: 75,   meat: 75,   mana: 0,    stone: 0,    ivory: 0 },
+      { class: "shaman-t2"   , name: "Spellcrafter", wood: 100,  meat: 100,  mana: 5,    stone: 100,  ivory: 0 },
+      { class: "shaman-t3"   , name: "Totemist"    , wood: 150,  meat: 150,  mana: 10,   stone: 150,  ivory: 0 },
+      { class: "shaman-t4"   , name: "Oracle"      , wood: 400,  meat: 400,  mana: 70,   stone: 400,  ivory: 0 },
+      { class: "shaman-t5"   , name: "Valkyrie"    , wood: 1000, meat: 1000, mana: 500,  stone: 1000, ivory: 0 }
     ]
   }
 
@@ -134,33 +134,23 @@ class Troops extends React.Component {
   render () {
     return (
       <div className="container">
-
-        <div className="page-header" id="banner">
-          <div className="row">
-            <div className="col-lg-8 col-md-7 col-sm-6">
-              <h1>BA troops utility tool</h1>
-              <p className="lead">Calculate Time and RSS Cost</p>
-            </div>
-          </div>
-        </div>
-
         <div className="bs-docs-section">
 
                     <div className="row">
             <div className="col-lg-12">
               <div className="page-header">
-                <h1 id="tables">Final Total</h1>
+                <h1 id="tables" className="title-center">Final Total</h1>
               </div>
 
               <div className="bs-component">
                 <table className="table table-hover">
                   <thead>
                     <tr>
-                      <th scope="col">Wood</th>
-                      <th scope="col">Meat</th>
-                      <th scope="col">Mana</th>
-                      <th scope="col">Stone</th>
-                      <th scope="col">Ivory</th>
+                      <th scope="col"><div className="icon wood"></div></th>
+                      <th scope="col"><div className="icon meat"></div></th>
+                      <th scope="col"><div className="icon mana"></div></th>
+                      <th scope="col"><div className="icon stone"></div></th>
+                      <th scope="col"><div className="icon ivory"></div></th>
                       <th scope="col">Will Take</th>
                     </tr>
                   </thead>
@@ -216,11 +206,11 @@ class Troops extends React.Component {
                       <th scope="col">Type</th>
                       <th scope="col">Amount</th>
                       <th scope="col">Time</th>
-                      <th scope="col">Wood</th>
-                      <th scope="col">Meat</th>
-                      <th scope="col">Mana</th>
-                      <th scope="col">Stone</th>
-                      <th scope="col">Ivory</th>
+                      <th scope="col"><div className="icon wood"></div></th>
+                      <th scope="col"><div className="icon meat"></div></th>
+                      <th scope="col"><div className="icon mana"></div></th>
+                      <th scope="col"><div className="icon stone"></div></th>
+                      <th scope="col"><div className="icon ivory"></div></th>
                       <th scope="col">Will Take</th>
                     </tr>
                   </thead>
@@ -230,7 +220,7 @@ class Troops extends React.Component {
                       return (
                         <React.Fragment>
                           <tr className="table-dark" key={key}>
-                            <td scope="col">{war.name}</td>
+                            <td scope="col"><div className={"icon troop " + war.class} title={war.name}></div></td>
                             <td scope="col">
                               <input
                                 type="text"
@@ -287,20 +277,20 @@ class Troops extends React.Component {
                       <th scope="col">Type</th>
                       <th scope="col">Amount</th>
                       <th scope="col">Time</th>
-                      <th scope="col">Wood</th>
-                      <th scope="col">Meat</th>
-                      <th scope="col">Mana</th>
-                      <th scope="col">Stone</th>
-                      <th scope="col">Ivory</th>
+                      <th scope="col"><div className="icon wood"></div></th>
+                      <th scope="col"><div className="icon meat"></div></th>
+                      <th scope="col"><div className="icon mana"></div></th>
+                      <th scope="col"><div className="icon stone"></div></th>
+                      <th scope="col"><div className="icon ivory"></div></th>
                       <th scope="col">Will Take</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.riders.map((war,i) => {
+                    {this.riders.map((rider,i) => {
                       return (
                         <React.Fragment>
                           <tr className="table-dark">
-                            <td scope="col">{war.name}</td>
+                            <td scope="col"><div className={"icon troop " + rider.class} title={rider.name}></div></td>
                             <td scope="col">
                               <input
                                 type="text"
@@ -315,11 +305,11 @@ class Troops extends React.Component {
                                 onChange={(e) => this.handleTimeChange(i, "riders", e)}
                                 />
                             </td>
-                            <td scope="col">{war.wood * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{war.meat * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{war.mana * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{war.stone * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{war.ivory * this.state.amounts.riders[i]}</td>
+                            <td scope="col">{rider.wood * this.state.amounts.riders[i]}</td>
+                            <td scope="col">{rider.meat * this.state.amounts.riders[i]}</td>
+                            <td scope="col">{rider.mana * this.state.amounts.riders[i]}</td>
+                            <td scope="col">{rider.stone * this.state.amounts.riders[i]}</td>
+                            <td scope="col">{rider.ivory * this.state.amounts.riders[i]}</td>
                             <td scope="col">{this.secondsToHours(this.state.timers.riders[i] * this.state.amounts.riders[i])}</td>
                           </tr>
                         </React.Fragment>
@@ -357,20 +347,20 @@ class Troops extends React.Component {
                       <th scope="col">Type</th>
                       <th scope="col">Amount</th>
                       <th scope="col">Time</th>
-                      <th scope="col">Wood</th>
-                      <th scope="col">Meat</th>
-                      <th scope="col">Mana</th>
-                      <th scope="col">Stone</th>
-                      <th scope="col">Ivory</th>
+                      <th scope="col"><div className="icon wood"></div></th>
+                      <th scope="col"><div className="icon meat"></div></th>
+                      <th scope="col"><div className="icon mana"></div></th>
+                      <th scope="col"><div className="icon stone"></div></th>
+                      <th scope="col"><div className="icon ivory"></div></th>
                       <th scope="col">Will Take</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {this.oracles.map((war,i) => {
+                    {this.oracles.map((shaman,i) => {
                       return (
                         <React.Fragment>
                           <tr className="table-dark">
-                            <td scope="col">{war.name}</td>
+                            <td scope="col"><div className={"icon troop " + shaman.class} title={shaman.name}></div></td>
                             <td scope="col">
                               <input
                                 type="text"
@@ -385,11 +375,11 @@ class Troops extends React.Component {
                                 onChange={(e) => this.handleTimeChange(i, "oracles", e)}
                                 />
                             </td>
-                            <td scope="col">{war.wood * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{war.meat * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{war.mana * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{war.stone * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{war.ivory * this.state.amounts.oracles[i]}</td>
+                            <td scope="col">{shaman.wood * this.state.amounts.oracles[i]}</td>
+                            <td scope="col">{shaman.meat * this.state.amounts.oracles[i]}</td>
+                            <td scope="col">{shaman.mana * this.state.amounts.oracles[i]}</td>
+                            <td scope="col">{shaman.stone * this.state.amounts.oracles[i]}</td>
+                            <td scope="col">{shaman.ivory * this.state.amounts.oracles[i]}</td>
                             <td scope="col">{this.secondsToHours(this.state.timers.oracles[i] * this.state.amounts.oracles[i])}</td>
                           </tr>
                         </React.Fragment>
