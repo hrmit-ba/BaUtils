@@ -131,6 +131,10 @@ class Troops extends React.Component {
     return total
   }
 
+  formatNumber(num) {
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+  }
+
   render () {
     return (
       <div className="container">
@@ -157,29 +161,29 @@ class Troops extends React.Component {
                   <tbody>
                      <tr className="table-success">
                         <td scope="col">{
-                          this.state.totals.warriors.total_rss.wood +
+                          this.formatNumber(this.state.totals.warriors.total_rss.wood +
                           this.state.totals.riders.total_rss.wood +
-                          this.state.totals.oracles.total_rss.wood
+                          this.state.totals.oracles.total_rss.wood)
                         }</td>
                         <td scope="col">{
-                          this.state.totals.warriors.total_rss.meat +
+                          this.formatNumber(this.state.totals.warriors.total_rss.meat +
                           this.state.totals.riders.total_rss.meat +
-                          this.state.totals.oracles.total_rss.meat
+                          this.state.totals.oracles.total_rss.meat)
                         }</td>
                         <td scope="col">{
-                          this.state.totals.warriors.total_rss.mana +
+                          this.formatNumber(this.state.totals.warriors.total_rss.mana +
                           this.state.totals.riders.total_rss.mana +
-                          this.state.totals.oracles.total_rss.mana
+                          this.state.totals.oracles.total_rss.mana)
                         }</td>
                         <td scope="col">{
-                          this.state.totals.warriors.total_rss.stone +
+                          this.formatNumber(this.state.totals.warriors.total_rss.stone +
                           this.state.totals.riders.total_rss.stone +
-                          this.state.totals.oracles.total_rss.stone
+                          this.state.totals.oracles.total_rss.stone)
                         }</td>
                         <td scope="col">{
-                          this.state.totals.warriors.total_rss.ivory +
+                          this.formatNumber(this.state.totals.warriors.total_rss.ivory +
                           this.state.totals.riders.total_rss.ivory +
-                          this.state.totals.oracles.total_rss.ivory
+                          this.state.totals.oracles.total_rss.ivory)
                         }</td>
                          <td scope="col">{
                           this.secondsToHours(this.state.totals.warriors.total_time +
@@ -235,11 +239,11 @@ class Troops extends React.Component {
                                 onChange={(e) => this.handleTimeChange(i, "warriors", e)}
                                 />
                             </td>
-                            <td scope="col">{war.wood * this.state.amounts.warriors[i]}</td>
-                            <td scope="col">{war.meat * this.state.amounts.warriors[i]}</td>
-                            <td scope="col">{war.mana * this.state.amounts.warriors[i]}</td>
-                            <td scope="col">{war.stone * this.state.amounts.warriors[i]}</td>
-                            <td scope="col">{war.ivory * this.state.amounts.warriors[i]}</td>
+                            <td scope="col">{this.formatNumber(war.wood * this.state.amounts.warriors[i])}</td>
+                            <td scope="col">{this.formatNumber(war.meat * this.state.amounts.warriors[i])}</td>
+                            <td scope="col">{this.formatNumber(war.mana * this.state.amounts.warriors[i])}</td>
+                            <td scope="col">{this.formatNumber(war.stone * this.state.amounts.warriors[i])}</td>
+                            <td scope="col">{this.formatNumber(war.ivory * this.state.amounts.warriors[i])}</td>
                             <td scope="col">{this.secondsToHours(this.state.timers.warriors[i] * this.state.amounts.warriors[i])}</td>
                           </tr>
                         </React.Fragment>
@@ -250,11 +254,11 @@ class Troops extends React.Component {
                         <td scope="col">Totals</td>
                         <td scope="col">-</td>
                         <td scope="col">-</td>
-                        <td scope="col">{this.state.totals.warriors.total_rss.wood}</td>
-                        <td scope="col">{this.state.totals.warriors.total_rss.meat}</td>
-                        <td scope="col">{this.state.totals.warriors.total_rss.mana}</td>
-                        <td scope="col">{this.state.totals.warriors.total_rss.stone}</td>
-                        <td scope="col">{this.state.totals.warriors.total_rss.ivory}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.wood)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.meat)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.mana)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.stone)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.ivory)}</td>
                         <td scope="col">{this.secondsToHours(this.state.totals.warriors.total_time)}</td>
                       </tr>
 
@@ -305,11 +309,11 @@ class Troops extends React.Component {
                                 onChange={(e) => this.handleTimeChange(i, "riders", e)}
                                 />
                             </td>
-                            <td scope="col">{rider.wood * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{rider.meat * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{rider.mana * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{rider.stone * this.state.amounts.riders[i]}</td>
-                            <td scope="col">{rider.ivory * this.state.amounts.riders[i]}</td>
+                            <td scope="col">{this.formatNumber(rider.wood * this.state.amounts.riders[i])}</td>
+                            <td scope="col">{this.formatNumber(rider.meat * this.state.amounts.riders[i])}</td>
+                            <td scope="col">{this.formatNumber(rider.mana * this.state.amounts.riders[i])}</td>
+                            <td scope="col">{this.formatNumber(rider.stone * this.state.amounts.riders[i])}</td>
+                            <td scope="col">{this.formatNumber(rider.ivory * this.state.amounts.riders[i])}</td>
                             <td scope="col">{this.secondsToHours(this.state.timers.riders[i] * this.state.amounts.riders[i])}</td>
                           </tr>
                         </React.Fragment>
@@ -321,11 +325,11 @@ class Troops extends React.Component {
                         <td scope="col">Totals</td>
                         <td scope="col">-</td>
                         <td scope="col">-</td>
-                        <td scope="col">{this.state.totals.riders.total_rss.wood}</td>
-                        <td scope="col">{this.state.totals.riders.total_rss.meat}</td>
-                        <td scope="col">{this.state.totals.riders.total_rss.mana}</td>
-                        <td scope="col">{this.state.totals.riders.total_rss.stone}</td>
-                        <td scope="col">{this.state.totals.riders.total_rss.ivory}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.wood)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.meat)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.mana)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.stone)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.ivory)}</td>
                         <td scope="col">{this.secondsToHours(this.state.totals.riders.total_time)}</td>
                       </tr>
                   </tbody>
@@ -375,11 +379,11 @@ class Troops extends React.Component {
                                 onChange={(e) => this.handleTimeChange(i, "oracles", e)}
                                 />
                             </td>
-                            <td scope="col">{shaman.wood * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{shaman.meat * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{shaman.mana * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{shaman.stone * this.state.amounts.oracles[i]}</td>
-                            <td scope="col">{shaman.ivory * this.state.amounts.oracles[i]}</td>
+                            <td scope="col">{this.formatNumber(shaman.wood * this.state.amounts.oracles[i])}</td>
+                            <td scope="col">{this.formatNumber(shaman.meat * this.state.amounts.oracles[i])}</td>
+                            <td scope="col">{this.formatNumber(shaman.mana * this.state.amounts.oracles[i])}</td>
+                            <td scope="col">{this.formatNumber(shaman.stone * this.state.amounts.oracles[i])}</td>
+                            <td scope="col">{this.formatNumber(shaman.ivory * this.state.amounts.oracles[i])}</td>
                             <td scope="col">{this.secondsToHours(this.state.timers.oracles[i] * this.state.amounts.oracles[i])}</td>
                           </tr>
                         </React.Fragment>
@@ -390,11 +394,11 @@ class Troops extends React.Component {
                         <td scope="col">Totals</td>
                         <td scope="col">-</td>
                         <td scope="col">-</td>
-                        <td scope="col">{this.state.totals.oracles.total_rss.wood}</td>
-                        <td scope="col">{this.state.totals.oracles.total_rss.meat}</td>
-                        <td scope="col">{this.state.totals.oracles.total_rss.mana}</td>
-                        <td scope="col">{this.state.totals.oracles.total_rss.stone}</td>
-                        <td scope="col">{this.state.totals.oracles.total_rss.ivory}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.wood)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.meat)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.mana)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.stone)}</td>
+                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.ivory)}</td>
                         <td scope="col">{this.secondsToHours(this.state.totals.oracles.total_time)}</td>
                       </tr>
                   </tbody>
