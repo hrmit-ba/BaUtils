@@ -32,6 +32,13 @@ class TroopsInteractiveTable extends React.Component {
     return days+hours+':'+minutes+':'+seconds
   }
 
+  calculateRequiredRss = (type, troop_type, i) => {
+    return this.props.bind.amounts[troop_type][i] * (
+      this.props.bind[this.state.troopType][i].data.resources[type] * (
+        (100-this.props.bind.hordeDiscount)/100)
+      )
+  }
+
   render() {
     return (
       <div className="row">
@@ -88,12 +95,12 @@ class TroopsInteractiveTable extends React.Component {
                             onChange={(e) => this.props.onChange(i, this.state.troopType, e)}
                             />
                         </td>
-                        <td scope="col">{this.props.bind.power[this.state.troopType][i]}</td>
-                        <td scope="col">{this.formatNumber(troop.data.resources.wood * this.props.bind.amounts[this.state.troopType][i])}</td>
-                        <td scope="col">{this.formatNumber(troop.data.resources.meat * this.props.bind.amounts[this.state.troopType][i])}</td>
-                        <td scope="col">{this.formatNumber(troop.data.resources.mana * this.props.bind.amounts[this.state.troopType][i])}</td>
-                        <td scope="col">{this.formatNumber(troop.data.resources.stone * this.props.bind.amounts[this.state.troopType][i])}</td>
-                        <td scope="col">{this.formatNumber(troop.data.resources.ivory * this.props.bind.amounts[this.state.troopType][i])}</td>
+                        <td scope="col">{this.formatNumber(this.props.bind.power[this.state.troopType][i])}</td>
+                        <td scope="col">{this.formatNumber(this.calculateRequiredRss('wood', this.state.troopType, i))}</td>
+                        <td scope="col">{this.formatNumber(this.calculateRequiredRss('meat', this.state.troopType, i))}</td>
+                        <td scope="col">{this.formatNumber(this.calculateRequiredRss('mana', this.state.troopType, i))}</td>
+                        <td scope="col">{this.formatNumber(this.calculateRequiredRss('stone', this.state.troopType, i))}</td>
+                        <td scope="col">{this.formatNumber(this.calculateRequiredRss('ivory', this.state.troopType, i))}</td>
                         <td scope="col">{this.props.secondsToHours(this.props.calculateTimePerc(troop.data.details.time,this.state.troopType, i, this.props.state)) }</td>
                       </tr>
                     </React.Fragment>

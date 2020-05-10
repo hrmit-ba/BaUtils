@@ -16,6 +16,7 @@ class Troops extends React.Component {
       timers: { warriors: [0,0,0,0,0], riders: [0,0,0,0,0], shamans: [0,0,0,0,0] },
       timerPerc: { warriors: { percValue: 0 }, riders: { percValue: 0 }, shamans: { percValue: 0 } },
       allPerc: 0,
+      hordeDiscount: 0,
       amounts: { warriors: [0,0,0,0,0], riders: [0,0,0,0,0], shamans: [0,0,0,0,0] },
       power: { warriors: [0,0,0,0,0], riders: [0,0,0,0,0], shamans: [0,0,0,0,0] },
       warriors: this.props.troops.filter(x=>x.kind === "warriors"),
@@ -73,7 +74,7 @@ class Troops extends React.Component {
     power[type][i] = ev.target.value * this.state[type][i].data.details.power
 
     totals[type].total_time = this.getTotalTime(amounts[type], type)
-    totals[type].total_rss = this.getTotalRss(amounts[type], this.state[type][i])
+    totals[type].total_rss = this.getTotalRss(amounts[type], this.state[type])
     totals[type].total_power = this.getTotalPower(amounts[type], this.state[type])
 
     this.setState({
@@ -145,16 +146,39 @@ class Troops extends React.Component {
     return totalTime
   }
 
-  getTotalRss = (amounts, group) => {
+  getTotalRss = (amounts, group, disc=null) => {
     var total = { wood: 0, meat: 0, mana: 0, stone: 0, ivory: 0 }
+    disc = disc ?? this.state.hordeDiscount
 
     amounts.map((amount,i) => {
       Object.keys(total).map((key) => {
-        total[key] += amount * group.data.resources[key]
+        total[key] += amount * (group[i].data.resources[key] * ((100-disc)/100))
       })
     })
 
     return total
+  }
+
+  enableHordeDiscount = (e) => {
+    var totals = this.state.totals
+    var discount = this.state.hordeDiscount == 0 ? 8 : 0
+
+    this.updateAllTotals(totals, discount)
+
+    this.setState({
+      ...this.state,
+        hordeDiscount: discount,
+        totals: totals
+    })
+  }
+
+  updateAllTotals = (totals, discount) => {
+    var all_troop_types = ['warriors', 'riders', 'shamans']
+
+    for(var i=0; i< all_troop_types.length; i++){
+      var type = all_troop_types[i]
+      totals[type].total_rss = this.getTotalRss(this.state.amounts[type], this.state[type], discount)
+    }
   }
 
   formatNumber = (num) => {
@@ -173,6 +197,18 @@ class Troops extends React.Component {
               </div>
 
               <div className="bs-component">
+                <div className="horde-checker">
+                  {
+                    <React.Fragment>
+                      <input
+                        type="checkbox"
+                        className="perc-check"
+                        onChange={(e) => this.enableHordeDiscount(e)}
+                      />
+                      <span className="tag-span">Yellow Horde discount</span>
+                    </React.Fragment>
+                  }
+                </div>
                 <table className="table table-hover">
                   <thead>
                     <tr>
