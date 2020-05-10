@@ -13,9 +13,74 @@
  *= require_tree .
  *= require_self
  */
- .title-center {
-    text-align: center;
- }
+.title-center {
+  text-align: center;
+}
+
+.page-header {
+  text-transform: capitalize;
+}
+
+.perc-wrapper{
+  font-weight: bolder;
+}
+
+.info-wrapper {
+  display: table;
+  background-color: #405160;
+  padding: 15px;
+  margin: 0 auto;
+}
+
+.perc-check {
+  margin-right: 5px;
+  float: left;
+  margin-top: 5px;
+}
+
+.perc-box {
+  margin-left: 5px;
+  margin-right: 5px;
+  max-width: 50px;
+  text-align: center;
+  border-radius: 5px;
+  border: none;
+}
+
+.tag-span {
+  display: flex;
+  align-items: center;
+}
+
+.tag-img {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(<%= asset_path('tag-img.png')%>);
+  width: 50px;
+  height: 50px;
+  margin-left: 10px;
+}
+
+.info-button {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(<%= asset_path('info-button.png')%>);
+  height: 50px;
+  width: 275px;
+  margin-left: 10px;
+}
+
+.training-speed {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url(<%= asset_path('training-speed.png')%>);
+  height:100px;
+  width:275px;
+  margin-left: 10px;
+}
 
 .icon {
   background-size: contain;

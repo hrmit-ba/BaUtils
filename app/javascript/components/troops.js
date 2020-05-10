@@ -5,111 +5,159 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
+import TroopInteractiveTable from "./TroopInteractiveTable"
 
 class Troops extends React.Component {
 
   constructor(props) {
     super(props)
-    debugger
+
     this.state = {
-      timers: {
-        warriors:[0,0,0,0,0],
-        riders: [0,0,0,0,0],
-        oracles: [0,0,0,0,0],
-      },
-      amounts: {
-        warriors:[0,0,0,0,0],
-        riders:[0,0,0,0,0],
-        oracles:[0,0,0,0,0],
-      },
+      timers: { warriors: [0,0,0,0,0], riders: [0,0,0,0,0], shamans: [0,0,0,0,0] },
+      timerPerc: { warriors: { percValue: 0 }, riders: { percValue: 0 }, shamans: { percValue: 0 } },
+      allPerc: 0,
+      amounts: { warriors: [0,0,0,0,0], riders: [0,0,0,0,0], shamans: [0,0,0,0,0] },
+      power: { warriors: [0,0,0,0,0], riders: [0,0,0,0,0], shamans: [0,0,0,0,0] },
+      warriors: this.props.troops.filter(x=>x.kind === "warriors"),
+      riders: this.props.troops.filter(x=>x.kind === "riders"),
+      shamans: this.props.troops.filter(x=>x.kind === "shamans"),
       totals: {
         warriors: {
           total_time: 0,
           total_rss: {
             wood: 0, meat: 0, mana: 0, stone: 0, ivory: 0
-          }
+          },
+          total_power: 0,
         },
         riders: {
           total_time: 0,
           total_rss: {
             wood: 0, meat: 0, mana: 0, stone: 0, ivory: 0
-          }
+          },
+          total_power: 0,
         },
-        oracles: {
+        shamans: {
           total_time: 0,
           total_rss: {
             wood: 0, meat: 0, mana: 0, stone: 0, ivory: 0
-          }
+          },
+          total_power: 0,
         }
       }
     }
-
-    this.troops = props.troops
   }
 
   secondsToHours = (value) => {
     if (!value) return "00:00:00"
 
     var seconds = value
+    var days  = Math.floor(seconds/(3600*24))
+    seconds -= days*3600*24
     var hours = Math.floor(seconds / 3600)
     seconds -= hours*3600
     var minutes = Math.floor(seconds / 60)
     seconds -= minutes*60
-
+    days = days == 0 ? "" : days+'d '
     if (hours   < 10) {hours   = "0"+hours}
     if (minutes < 10) {minutes = "0"+minutes}
     if (seconds < 10) {seconds = "0"+seconds}
-    return hours+':'+minutes+':'+seconds
-}
+    return days+hours+':'+minutes+':'+seconds
+  }
 
   handleChange = (i, type, ev) => {
     var amounts = this.state.amounts
-    amounts[type][i] = ev.target.value
-
+    var power = this.state.power
     var totals = this.state.totals
-    totals[type].total_time = this.getTotalTime(amounts[type], this.state.timers[type])
-    totals[type].total_rss = this.getTotalRss(amounts[type], this[type])
+
+    amounts[type][i] = ev.target.value
+    power[type][i] = ev.target.value * this.state[type][i].data.details.power
+
+    totals[type].total_time = this.getTotalTime(amounts[type], type)
+    totals[type].total_rss = this.getTotalRss(amounts[type], this.state[type][i])
+    totals[type].total_power = this.getTotalPower(amounts[type], this.state[type])
 
     this.setState({
       ...this.state,
         amounts: amounts,
         totals: totals,
+        power: power,
     })
   }
 
-  handleTimeChange = (i, type, ev) => {
-    var timers = this.state.timers
-    timers[type][i] = ev.target.value
+  updateTotals = (type, bind=null) => {
+    bind = bind ?? this.state
 
-    var totals = this.state.totals
-    totals[type].total_time = this.getTotalTime(this.state.amounts[type], this.state.timers[type])
+    var totals = bind.totals
+    totals[type].total_time = this.getTotalTime(bind.amounts[type], type)
+
+    this.setState({
+    ...bind,
+      totals: totals,
+    })
+  }
+
+  onMainPercChange = (type, e) => {
+    var allPerc = this.state.allPerc
+    allPerc = !e.target.value ? 0 : e.target.value
 
     this.setState({
       ...this.state,
-        timers: timers,
-        totals: totals,
+        allPerc: allPerc,
+    }, () => {
+        this.updateTotals(type, this.state)
     })
   }
 
-  getTotalTime = (amounts, timers) => {
+  onTroopPercChange = (type, e) => {
+    var timerPerc = this.state.timerPerc
+    timerPerc[type].percValue = !e.target.value ? 0 : e.target.value
+
+    this.setState({
+      ...this.state,
+        timerPerc: timerPerc,
+    }, () => {
+        this.updateTotals(type, this.state)
+    })
+  }
+
+  getTotalPower = (amounts, troops) => {
+    var totalPower = 0
+    for(var i=0;i<amounts.length;i++) { totalPower += amounts[i] * troops[i].data.details.power }
+    return totalPower
+  }
+
+  calculateTimePerc = (time, type, tier, bind=null) => {
+    bind = bind ?? this.state
+
+    var to_divide = time * bind.amounts[type][tier]
+    var divided_by = (100 + parseFloat(bind.allPerc) + parseFloat(bind.timerPerc[type].percValue))/100
+
+    return Math.round(to_divide/divided_by)
+  }
+
+  getTotalTime = (amounts, type, bind=null) => {
     var totalTime = 0
-    for(var i=0; i<amounts.length ;i++) { totalTime += amounts[i] * timers[i] }
+    bind = bind ?? this.state
+    for(var i=0; i<amounts.length ;i++) {
+      totalTime += this.calculateTimePerc(bind[type][i].data.details.time,type, i, bind)
+    }
+
     return totalTime
   }
 
-  getTotalRss = (amounts, groups) => {
+  getTotalRss = (amounts, group) => {
     var total = { wood: 0, meat: 0, mana: 0, stone: 0, ivory: 0 }
 
     amounts.map((amount,i) => {
       Object.keys(total).map((key) => {
-        total[key] += amount * groups[i][key]
+        total[key] += amount * group.data.resources[key]
       })
     })
 
     return total
   }
 
-  formatNumber(num) {
+  formatNumber = (num) => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
   }
 
@@ -118,7 +166,7 @@ class Troops extends React.Component {
       <div className="container">
         <div className="bs-docs-section">
 
-                    <div className="row">
+          <div className="row">
             <div className="col-lg-12">
               <div className="page-header">
                 <h1 id="tables" className="title-center">Final Total</h1>
@@ -128,6 +176,7 @@ class Troops extends React.Component {
                 <table className="table table-hover">
                   <thead>
                     <tr>
+                      <th scope="col">Power Gained</th>
                       <th scope="col"><div className="icon wood"></div></th>
                       <th scope="col"><div className="icon meat"></div></th>
                       <th scope="col"><div className="icon mana"></div></th>
@@ -139,34 +188,39 @@ class Troops extends React.Component {
                   <tbody>
                      <tr className="table-success">
                         <td scope="col">{
+                          this.formatNumber(this.state.totals.warriors.total_power +
+                          this.state.totals.riders.total_power +
+                          this.state.totals.shamans.total_power)
+                        }</td>
+                        <td scope="col">{
                           this.formatNumber(this.state.totals.warriors.total_rss.wood +
                           this.state.totals.riders.total_rss.wood +
-                          this.state.totals.oracles.total_rss.wood)
+                          this.state.totals.shamans.total_rss.wood)
                         }</td>
                         <td scope="col">{
                           this.formatNumber(this.state.totals.warriors.total_rss.meat +
                           this.state.totals.riders.total_rss.meat +
-                          this.state.totals.oracles.total_rss.meat)
+                          this.state.totals.shamans.total_rss.meat)
                         }</td>
                         <td scope="col">{
                           this.formatNumber(this.state.totals.warriors.total_rss.mana +
                           this.state.totals.riders.total_rss.mana +
-                          this.state.totals.oracles.total_rss.mana)
+                          this.state.totals.shamans.total_rss.mana)
                         }</td>
                         <td scope="col">{
                           this.formatNumber(this.state.totals.warriors.total_rss.stone +
                           this.state.totals.riders.total_rss.stone +
-                          this.state.totals.oracles.total_rss.stone)
+                          this.state.totals.shamans.total_rss.stone)
                         }</td>
                         <td scope="col">{
                           this.formatNumber(this.state.totals.warriors.total_rss.ivory +
                           this.state.totals.riders.total_rss.ivory +
-                          this.state.totals.oracles.total_rss.ivory)
+                          this.state.totals.shamans.total_rss.ivory)
                         }</td>
                          <td scope="col">{
                           this.secondsToHours(this.state.totals.warriors.total_time +
                           this.state.totals.riders.total_time +
-                          this.state.totals.oracles.total_time)
+                          this.state.totals.shamans.total_time)
                         }</td>
                       </tr>
                   </tbody>
@@ -175,216 +229,37 @@ class Troops extends React.Component {
             </div>
           </div>
 
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="page-header">
-                <h1 id="tables">Warriors</h1>
-              </div>
-
-              <div className="bs-component">
-                <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th scope="col">Type</th>
-                      <th scope="col">Amount</th>
-                      <th scope="col">Time</th>
-                      <th scope="col"><div className="icon wood"></div></th>
-                      <th scope="col"><div className="icon meat"></div></th>
-                      <th scope="col"><div className="icon mana"></div></th>
-                      <th scope="col"><div className="icon stone"></div></th>
-                      <th scope="col"><div className="icon ivory"></div></th>
-                      <th scope="col">Will Take</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.troops.warriors.map((war,i) => {
-                      var key = "war_"+i
-                      return (
-                        <React.Fragment>
-                          <tr className="table-dark" key={key}>
-                            <td scope="col"><div className={"icon troop " + war.class_name} title={war.name}></div></td>
-                            <td scope="col">
-                              <input
-                                type="text"
-                                pattern="[0-9]*"
-                                onChange={(e) => this.handleChange(i, "warriors", e)}
-                                />
-                            </td>
-                            <td scope="col">
-                              <input
-                                type="text"
-                                pattern="[0-9]*"
-                                onChange={(e) => this.handleTimeChange(i, "warriors", e)}
-                                />
-                            </td>
-                            <td scope="col">{this.formatNumber(war.wood * this.state.amounts.warriors[i])}</td>
-                            <td scope="col">{this.formatNumber(war.meat * this.state.amounts.warriors[i])}</td>
-                            <td scope="col">{this.formatNumber(war.mana * this.state.amounts.warriors[i])}</td>
-                            <td scope="col">{this.formatNumber(war.stone * this.state.amounts.warriors[i])}</td>
-                            <td scope="col">{this.formatNumber(war.ivory * this.state.amounts.warriors[i])}</td>
-                            <td scope="col">{this.secondsToHours(this.state.timers.warriors[i] * this.state.amounts.warriors[i])}</td>
-                          </tr>
-                        </React.Fragment>
-                      )
-                    })}
-
-                      <tr className="table-success">
-                        <td scope="col">Totals</td>
-                        <td scope="col">-</td>
-                        <td scope="col">-</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.wood)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.meat)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.mana)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.stone)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.warriors.total_rss.ivory)}</td>
-                        <td scope="col">{this.secondsToHours(this.state.totals.warriors.total_time)}</td>
-                      </tr>
-
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div className="info-wrapper">
+            <span> A short step by step to get your training speed values for the calculator: </span>
+            <br />
+            <span className="tag-span"> Start by clicking the profile menu button: <div className="tag-img" /></span>
+            <span className="tag-span"> Then click on the "i" on the right side of the screen: <div className="info-button" /></span>
+            <span className="tag-span"> In combat information you are looking for the following: <div className="training-speed" /></span>
           </div>
 
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="page-header">
-                <h1 id="tables">Beastmaster</h1>
-              </div>
+            <TroopInteractiveTable
+              bind={this.state}
+              troopType="warriors" onChange={this.handleChange}
+              onMainPercChange= {this.onMainPercChange}
+              onTroopPercChange= {this.onTroopPercChange}
+              calculateTimePerc= {this.calculateTimePerc}
+              secondsToHours= {this.secondsToHours} />
 
-              <div className="bs-component">
-                <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th scope="col">Type</th>
-                      <th scope="col">Amount</th>
-                      <th scope="col">Time</th>
-                      <th scope="col"><div className="icon wood"></div></th>
-                      <th scope="col"><div className="icon meat"></div></th>
-                      <th scope="col"><div className="icon mana"></div></th>
-                      <th scope="col"><div className="icon stone"></div></th>
-                      <th scope="col"><div className="icon ivory"></div></th>
-                      <th scope="col">Will Take</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.troops.riders.map((rider,i) => {
-                      return (
-                        <React.Fragment>
-                          <tr className="table-dark">
-                            <td scope="col"><div className={"icon troop " + rider.class_name} title={rider.name}></div></td>
-                            <td scope="col">
-                              <input
-                                type="text"
-                                pattern="[0-9]*"
-                                onChange={(e) => this.handleChange(i, "riders", e)}
-                                />
-                            </td>
-                            <td scope="col">
-                              <input
-                                type="text"
-                                pattern="[0-9]*"
-                                onChange={(e) => this.handleTimeChange(i, "riders", e)}
-                                />
-                            </td>
-                            <td scope="col">{this.formatNumber(rider.wood * this.state.amounts.riders[i])}</td>
-                            <td scope="col">{this.formatNumber(rider.meat * this.state.amounts.riders[i])}</td>
-                            <td scope="col">{this.formatNumber(rider.mana * this.state.amounts.riders[i])}</td>
-                            <td scope="col">{this.formatNumber(rider.stone * this.state.amounts.riders[i])}</td>
-                            <td scope="col">{this.formatNumber(rider.ivory * this.state.amounts.riders[i])}</td>
-                            <td scope="col">{this.secondsToHours(this.state.timers.riders[i] * this.state.amounts.riders[i])}</td>
-                          </tr>
-                        </React.Fragment>
-                      )
+            <TroopInteractiveTable
+              bind={this.state}
+              troopType="riders" onChange={this.handleChange}
+              onMainPercChange= {this.onMainPercChange}
+              onTroopPercChange= {this.onTroopPercChange}
+              calculateTimePerc= {this.calculateTimePerc}
+              secondsToHours= {this.secondsToHours}/>
 
-                    })}
-
-                       <tr className="table-success">
-                        <td scope="col">Totals</td>
-                        <td scope="col">-</td>
-                        <td scope="col">-</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.wood)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.meat)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.mana)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.stone)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.riders.total_rss.ivory)}</td>
-                        <td scope="col">{this.secondsToHours(this.state.totals.riders.total_time)}</td>
-                      </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-lg-12">
-              <div className="page-header">
-                <h1 id="tables">Shaman</h1>
-              </div>
-
-              <div className="bs-component">
-                <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th scope="col">Type</th>
-                      <th scope="col">Amount</th>
-                      <th scope="col">Time</th>
-                      <th scope="col"><div className="icon wood"></div></th>
-                      <th scope="col"><div className="icon meat"></div></th>
-                      <th scope="col"><div className="icon mana"></div></th>
-                      <th scope="col"><div className="icon stone"></div></th>
-                      <th scope="col"><div className="icon ivory"></div></th>
-                      <th scope="col">Will Take</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {this.troops.shaman.map((shaman,i) => {
-                      return (
-                        <React.Fragment>
-                          <tr className="table-dark">
-                            <td scope="col"><div className={"icon troop " + shaman.class_name} title={shaman.name}></div></td>
-                            <td scope="col">
-                              <input
-                                type="text"
-                                pattern="[0-9]*"
-                                onChange={(e) => this.handleChange(i, "oracles", e)}
-                                />
-                            </td>
-                            <td scope="col">
-                              <input
-                                type="text"
-                                pattern="[0-9]*"
-                                onChange={(e) => this.handleTimeChange(i, "oracles", e)}
-                                />
-                            </td>
-                            <td scope="col">{this.formatNumber(shaman.wood * this.state.amounts.oracles[i])}</td>
-                            <td scope="col">{this.formatNumber(shaman.meat * this.state.amounts.oracles[i])}</td>
-                            <td scope="col">{this.formatNumber(shaman.mana * this.state.amounts.oracles[i])}</td>
-                            <td scope="col">{this.formatNumber(shaman.stone * this.state.amounts.oracles[i])}</td>
-                            <td scope="col">{this.formatNumber(shaman.ivory * this.state.amounts.oracles[i])}</td>
-                            <td scope="col">{this.secondsToHours(this.state.timers.oracles[i] * this.state.amounts.oracles[i])}</td>
-                          </tr>
-                        </React.Fragment>
-                      )
-
-                    })}
-                     <tr className="table-success">
-                        <td scope="col">Totals</td>
-                        <td scope="col">-</td>
-                        <td scope="col">-</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.wood)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.meat)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.mana)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.stone)}</td>
-                        <td scope="col">{this.formatNumber(this.state.totals.oracles.total_rss.ivory)}</td>
-                        <td scope="col">{this.secondsToHours(this.state.totals.oracles.total_time)}</td>
-                      </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
+            <TroopInteractiveTable
+              bind={this.state}
+              troopType="shamans" onChange={this.handleChange}
+              onMainPercChange= {this.onMainPercChange}
+              onTroopPercChange= {this.onTroopPercChange}
+              calculateTimePerc= {this.calculateTimePerc}
+              secondsToHours= {this.secondsToHours} />
         </div>
       </div>
     )
