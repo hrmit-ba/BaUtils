@@ -99,13 +99,18 @@ class Troops extends React.Component {
 
   onMainPercChange = (type, e) => {
     var allPerc = this.state.allPerc
+    var all_troop_types = ['warriors', 'riders', 'shamans']
+
     allPerc = !e.target.value ? 0 : e.target.value
 
     this.setState({
       ...this.state,
         allPerc: allPerc,
     }, () => {
-        this.updateTotals(type, this.state)
+
+      for(var i=0; i< all_troop_types.length; i++) {
+        this.updateTotals(all_troop_types[i], this.state)
+      }
     })
   }
 
